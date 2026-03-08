@@ -1,0 +1,727 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired":
+    {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets":
+    [
+        {
+            "name": "msvc-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "cacheVariables":
+            {
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_C_FLAGS_INIT": "$env{PROJ_C_WARN_FLAGS} $env{PROJ_C_DEBUG_FLAGS} $env{PROJ_C_RELEASE_FLAGS} $env{PROJ_C_MISC_FLAGS} $env{PROJ_C_ARCH_BITS} $env{PROJ_C_TOOL_FLAGS}",
+                "CMAKE_CXX_FLAGS_INIT": "$env{PROJ_CXX_WARN_FLAGS} $env{PROJ_CXX_DEBUG_FLAGS} $env{PROJ_CXX_RELEASE_FLAGS} $env{PROJ_CXX_MISC_FLAGS} $env{PROJ_CXX_ARCH_BITS} $env{PROJ_CXX_TOOL_FLAGS}"
+            },
+            "environment":
+            {
+                "PROJ_C_WARN_FLAGS": "",
+                "PROJ_CXX_WARN_FLAGS": "",
+                "PROJ_C_DEBUG_FLAGS": "",
+                "PROJ_CXX_DEBUG_FLAGS": "",
+                "PROJ_C_RELEASE_FLAGS": "",
+                "PROJ_CXX_RELEASE_FLAGS": "",
+                "PROJ_C_MISC_FLAGS": "",
+                "PROJ_CXX_MISC_FLAGS": "",
+                "PROJ_C_ARCH_BITS": "",
+                "PROJ_CXX_ARCH_BITS": "",
+                "PROJ_C_TOOL_FLAGS": "",
+                "PROJ_CXX_TOOL_FLAGS": ""
+            },
+            "condition":
+            {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "clang-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "cacheVariables":
+            {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_C_FLAGS_INIT": "$env{PROJ_C_WARN_FLAGS} $env{PROJ_C_DEBUG_FLAGS} $env{PROJ_C_RELEASE_FLAGS} $env{PROJ_C_MISC_FLAGS} $env{PROJ_C_ARCH_BITS} $env{PROJ_C_TOOL_FLAGS}",
+                "CMAKE_CXX_FLAGS_INIT": "$env{PROJ_CXX_WARN_FLAGS} $env{PROJ_CXX_DEBUG_FLAGS} $env{PROJ_CXX_RELEASE_FLAGS} $env{PROJ_CXX_MISC_FLAGS} $env{PROJ_CXX_ARCH_BITS} $env{PROJ_CXX_TOOL_FLAGS}"
+            },
+            "environment":
+            {
+                "PROJ_C_WARN_FLAGS": "-Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -Wundef -Wimplicit-fallthrough -Wnull-dereference -Wconversion -Wsign-conversion -Wcast-qual -Wcast-align -Wdouble-promotion -Wstrict-prototypes -Wmissing-prototypes",
+                "PROJ_CXX_WARN_FLAGS": "-Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -Wundef -Wimplicit-fallthrough -Wnull-dereference -Wconversion -Wsign-conversion -Wcast-qual -Wcast-align -Wdouble-promotion",
+                "PROJ_C_DEBUG_FLAGS": "",
+                "PROJ_CXX_DEBUG_FLAGS": "",
+                "PROJ_C_RELEASE_FLAGS": "",
+                "PROJ_CXX_RELEASE_FLAGS": "",
+                "PROJ_C_MISC_FLAGS": "",
+                "PROJ_CXX_MISC_FLAGS": "",
+                "PROJ_C_ARCH_BITS": "",
+                "PROJ_CXX_ARCH_BITS": "",
+                "PROJ_C_TOOL_FLAGS": "",
+                "PROJ_CXX_TOOL_FLAGS": ""
+            }
+        },
+        {
+            "name": "gcc-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "cacheVariables":
+            {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_C_FLAGS_INIT": "$env{PROJ_C_WARN_FLAGS} $env{PROJ_C_DEBUG_FLAGS} $env{PROJ_C_RELEASE_FLAGS} $env{PROJ_C_MISC_FLAGS} $env{PROJ_C_ARCH_BITS} $env{PROJ_C_TOOL_FLAGS}",
+                "CMAKE_CXX_FLAGS_INIT": "$env{PROJ_CXX_WARN_FLAGS} $env{PROJ_CXX_DEBUG_FLAGS} $env{PROJ_CXX_RELEASE_FLAGS} $env{PROJ_CXX_MISC_FLAGS} $env{PROJ_CXX_ARCH_BITS} $env{PROJ_CXX_TOOL_FLAGS}"
+            },
+            "environment":
+            {
+                "PROJ_C_WARN_FLAGS": "-Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -Wundef -Wimplicit-fallthrough -Wnull-dereference -Wconversion -Wsign-conversion -Wcast-qual -Wcast-align -Wdouble-promotion -Wstrict-prototypes -Wmissing-prototypes",
+                "PROJ_CXX_WARN_FLAGS": "-Wall -Wextra -Wpedantic -Wshadow -Wformat=2 -Wundef -Wimplicit-fallthrough -Wnull-dereference -Wconversion -Wsign-conversion -Wcast-qual -Wcast-align -Wdouble-promotion",
+                "PROJ_C_DEBUG_FLAGS": "",
+                "PROJ_CXX_DEBUG_FLAGS": "",
+                "PROJ_C_RELEASE_FLAGS": "",
+                "PROJ_CXX_RELEASE_FLAGS": "",
+                "PROJ_C_MISC_FLAGS": "",
+                "PROJ_CXX_MISC_FLAGS": "",
+                "PROJ_C_ARCH_BITS": "",
+                "PROJ_CXX_ARCH_BITS": "",
+                "PROJ_C_TOOL_FLAGS": "",
+                "PROJ_CXX_TOOL_FLAGS": ""
+            }
+        },
+        {
+            "name": "msvc-native-debug",
+            "displayName": "(MSVC) Native Debug",
+            "inherits": "msvc-base",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "environment":
+            {
+                "PROJ_CXX_DEBUG_FLAGS": "",
+                "PROJ_C_DEBUG_FLAGS": ""
+            },
+            "condition":
+            {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "msvc-native-release",
+            "displayName": "(MSVC) Native Release",
+            "inherits": "msvc-base",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "environment":
+            {
+                "PROJ_CXX_RELEASE_FLAGS": "",
+                "PROJ_C_RELEASE_FLAGS": ""
+            },
+            "condition":
+            {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "msvc-x64-debug",
+            "displayName": "(MSVC) x64 Debug",
+            "inherits": "msvc-native-debug",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x64"
+            },
+            "condition":
+            {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "msvc-x64-release",
+            "displayName": "(MSVC) x64 Release",
+            "inherits": "msvc-native-release",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x64"
+            },
+            "condition":
+            {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "msvc-x86-debug",
+            "displayName": "(MSVC) x86 Debug",
+            "inherits": "msvc-x64-debug",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "Win32"
+            },
+            "condition":
+            {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "msvc-x86-release",
+            "displayName": "(MSVC) x86 Release",
+            "inherits": "msvc-x64-release",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "Win32"
+            },
+            "condition":
+            {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "clang-native-debug",
+            "displayName": "(Clang) Native Debug",
+            "inherits": "clang-base",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "environment":
+            {
+                "PROJ_CXX_DEBUG_FLAGS": "-fno-omit-frame-pointer -fno-optimize-sibling-calls",
+                "PROJ_C_DEBUG_FLAGS": "-fno-omit-frame-pointer -fno-optimize-sibling-calls"
+            }
+        },
+        {
+            "name": "clang-native-release",
+            "displayName": "(Clang) Native Release",
+            "inherits": "clang-base",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "environment":
+            {
+                "PROJ_CXX_RELEASE_FLAGS": "-flto",
+                "PROJ_C_RELEASE_FLAGS": "-flto"
+            }
+        },
+        {
+            "name": "clang-native-release-tuned",
+            "displayName": "(Clang) Native Release (Tuned)",
+            "inherits": "clang-native-release",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "environment":
+            {
+                "PROJ_CXX_TOOL_FLAGS": "-march=native -mtune=native",
+                "PROJ_C_TOOL_FLAGS": "-march=native -mtune=native"
+            }
+        },
+        {
+            "name": "clang-x64-debug",
+            "displayName": "(Clang) x64 Debug",
+            "inherits": "clang-native-debug",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x64"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m64",
+                "PROJ_C_ARCH_BITS": "-m64"
+            }
+        },
+        {
+            "name": "clang-x64-release",
+            "displayName": "(Clang) x64 Release",
+            "inherits": "clang-native-release",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x64"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m64",
+                "PROJ_C_ARCH_BITS": "-m64"
+            }
+        },
+        {
+            "name": "clang-x86-debug",
+            "displayName": "(Clang) x86 Debug",
+            "inherits": "clang-x64-debug",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x86"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m32",
+                "PROJ_C_ARCH_BITS": "-m32"
+            }
+        },
+        {
+            "name": "clang-x86-release",
+            "displayName": "(Clang) x86 Release",
+            "inherits": "clang-x64-release",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x86"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m32",
+                "PROJ_C_ARCH_BITS": "-m32"
+            }
+        },
+        {
+            "name": "clang-x64-release-tuned",
+            "displayName": "(Clang) x64 Release (Tuned)",
+            "inherits": "clang-native-release-tuned",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x64"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m64",
+                "PROJ_C_ARCH_BITS": "-m64"
+            }
+        },
+        {
+            "name": "clang-x86-release-tuned",
+            "displayName": "(Clang) x86 Release (Tuned)",
+            "inherits": "clang-x64-release-tuned",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x86"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m32",
+                "PROJ_C_ARCH_BITS": "-m32"
+            }
+        },
+        {
+            "name": "gcc-native-debug",
+            "displayName": "(GCC) Native Debug",
+            "inherits": "gcc-base",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "environment":
+            {
+                "PROJ_CXX_DEBUG_FLAGS": "-fno-omit-frame-pointer -fno-optimize-sibling-calls",
+                "PROJ_C_DEBUG_FLAGS": "-fno-omit-frame-pointer -fno-optimize-sibling-calls"
+            }
+        },
+        {
+            "name": "gcc-native-release",
+            "displayName": "(GCC) Native Release",
+            "inherits": "gcc-base",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "environment":
+            {
+                "PROJ_CXX_RELEASE_FLAGS": "-flto",
+                "PROJ_C_RELEASE_FLAGS": "-flto"
+            }
+        },
+        {
+            "name": "gcc-native-debug-analyzer",
+            "displayName": "(GCC) Native Debug (Analyzer)",
+            "inherits": "gcc-native-debug",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "environment":
+            {
+                "PROJ_CXX_TOOL_FLAGS": "-fanalyzer",
+                "PROJ_C_TOOL_FLAGS": "-fanalyzer"
+            }
+        },
+        {
+            "name": "gcc-native-release-tuned",
+            "displayName": "(GCC) Native Release (Tuned)",
+            "inherits": "gcc-native-release",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "environment":
+            {
+                "PROJ_CXX_TOOL_FLAGS": "-march=native -mtune=native",
+                "PROJ_C_TOOL_FLAGS": "-march=native -mtune=native"
+            }
+        },
+        {
+            "name": "gcc-x64-debug",
+            "displayName": "(GCC) x64 Debug",
+            "inherits": "gcc-native-debug",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x64"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m64",
+                "PROJ_C_ARCH_BITS": "-m64"
+            }
+        },
+        {
+            "name": "gcc-x64-release",
+            "displayName": "(GCC) x64 Release",
+            "inherits": "gcc-native-release",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x64"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m64",
+                "PROJ_C_ARCH_BITS": "-m64"
+            }
+        },
+        {
+            "name": "gcc-x86-debug",
+            "displayName": "(GCC) x86 Debug",
+            "inherits": "gcc-x64-debug",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x86"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m32",
+                "PROJ_C_ARCH_BITS": "-m32"
+            }
+        },
+        {
+            "name": "gcc-x86-release",
+            "displayName": "(GCC) x86 Release",
+            "inherits": "gcc-x64-release",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x86"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m32",
+                "PROJ_C_ARCH_BITS": "-m32"
+            }
+        },
+        {
+            "name": "gcc-x64-debug-analyzer",
+            "displayName": "(GCC) x64 Debug (Analyzer)",
+            "inherits": "gcc-native-debug-analyzer",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x64"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m64",
+                "PROJ_C_ARCH_BITS": "-m64"
+            }
+        },
+        {
+            "name": "gcc-x86-debug-analyzer",
+            "displayName": "(GCC) x86 Debug (Analyzer)",
+            "inherits": "gcc-x64-debug-analyzer",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x86"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m32",
+                "PROJ_C_ARCH_BITS": "-m32"
+            }
+        },
+        {
+            "name": "gcc-x64-release-tuned",
+            "displayName": "(GCC) x64 Release (Tuned)",
+            "inherits": "gcc-native-release-tuned",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x64"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m64",
+                "PROJ_C_ARCH_BITS": "-m64"
+            }
+        },
+        {
+            "name": "gcc-x86-release-tuned",
+            "displayName": "(GCC) x86 Release (Tuned)",
+            "inherits": "gcc-x64-release-tuned",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "architecture":
+            {
+                "strategy": "external",
+                "value": "x86"
+            },
+            "environment":
+            {
+                "PROJ_CXX_ARCH_BITS": "-m32",
+                "PROJ_C_ARCH_BITS": "-m32"
+            }
+        }
+    ],
+    "buildPresets":
+    [
+        {
+            "name": "msvc-native-debug",
+            "displayName": "(MSVC) Native Debug",
+            "configurePreset": "msvc-native-debug"
+        },
+        {
+            "name": "msvc-native-release",
+            "displayName": "(MSVC) Native Release",
+            "configurePreset": "msvc-native-release"
+        },
+        {
+            "name": "msvc-x64-debug",
+            "displayName": "(MSVC) x64 Debug",
+            "configurePreset": "msvc-x64-debug"
+        },
+        {
+            "name": "msvc-x64-release",
+            "displayName": "(MSVC) x64 Release",
+            "configurePreset": "msvc-x64-release"
+        },
+        {
+            "name": "msvc-x86-debug",
+            "displayName": "(MSVC) x86 Debug",
+            "configurePreset": "msvc-x86-debug"
+        },
+        {
+            "name": "msvc-x86-release",
+            "displayName": "(MSVC) x86 Release",
+            "configurePreset": "msvc-x86-release"
+        },
+        {
+            "name": "clang-native-debug",
+            "displayName": "(Clang) Native Debug",
+            "configurePreset": "clang-native-debug"
+        },
+        {
+            "name": "clang-native-release",
+            "displayName": "(Clang) Native Release",
+            "configurePreset": "clang-native-release"
+        },
+        {
+            "name": "clang-native-release-tuned",
+            "displayName": "(Clang) Native Release (Tuned)",
+            "configurePreset": "clang-native-release-tuned"
+        },
+        {
+            "name": "clang-x64-debug",
+            "displayName": "(Clang) x64 Debug",
+            "configurePreset": "clang-x64-debug"
+        },
+        {
+            "name": "clang-x64-release",
+            "displayName": "(Clang) x64 Release",
+            "configurePreset": "clang-x64-release"
+        },
+        {
+            "name": "clang-x86-debug",
+            "displayName": "(Clang) x86 Debug",
+            "configurePreset": "clang-x86-debug"
+        },
+        {
+            "name": "clang-x86-release",
+            "displayName": "(Clang) x86 Release",
+            "configurePreset": "clang-x86-release"
+        },
+        {
+            "name": "clang-x64-release-tuned",
+            "displayName": "(Clang) x64 Release (Tuned)",
+            "configurePreset": "clang-x64-release-tuned"
+        },
+        {
+            "name": "clang-x86-release-tuned",
+            "displayName": "(Clang) x86 Release (Tuned)",
+            "configurePreset": "clang-x86-release-tuned"
+        },
+        {
+            "name": "gcc-native-debug",
+            "displayName": "(GCC) Native Debug",
+            "configurePreset": "gcc-native-debug"
+        },
+        {
+            "name": "gcc-native-release",
+            "displayName": "(GCC) Native Release",
+            "configurePreset": "gcc-native-release"
+        },
+        {
+            "name": "gcc-native-debug-analyzer",
+            "displayName": "(GCC) Native Debug (Analyzer)",
+            "configurePreset": "gcc-native-debug-analyzer"
+        },
+        {
+            "name": "gcc-native-release-tuned",
+            "displayName": "(GCC) Native Release (Tuned)",
+            "configurePreset": "gcc-native-release-tuned"
+        },
+        {
+            "name": "gcc-x64-debug",
+            "displayName": "(GCC) x64 Debug",
+            "configurePreset": "gcc-x64-debug"
+        },
+        {
+            "name": "gcc-x64-release",
+            "displayName": "(GCC) x64 Release",
+            "configurePreset": "gcc-x64-release"
+        },
+        {
+            "name": "gcc-x86-debug",
+            "displayName": "(GCC) x86 Debug",
+            "configurePreset": "gcc-x86-debug"
+        },
+        {
+            "name": "gcc-x86-release",
+            "displayName": "(GCC) x86 Release",
+            "configurePreset": "gcc-x86-release"
+        },
+        {
+            "name": "gcc-x64-debug-analyzer",
+            "displayName": "(GCC) x64 Debug (Analyzer)",
+            "configurePreset": "gcc-x64-debug-analyzer"
+        },
+        {
+            "name": "gcc-x86-debug-analyzer",
+            "displayName": "(GCC) x86 Debug (Analyzer)",
+            "configurePreset": "gcc-x86-debug-analyzer"
+        },
+        {
+            "name": "gcc-x64-release-tuned",
+            "displayName": "(GCC) x64 Release (Tuned)",
+            "configurePreset": "gcc-x64-release-tuned"
+        },
+        {
+            "name": "gcc-x86-release-tuned",
+            "displayName": "(GCC) x86 Release (Tuned)",
+            "configurePreset": "gcc-x86-release-tuned"
+        }
+    ]
+}
