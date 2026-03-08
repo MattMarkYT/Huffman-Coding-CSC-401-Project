@@ -36,6 +36,11 @@ Supported compiler-exclusive tools:
 * `tuned` to enable CLang/GCC-specific native architecture tuning, only for **release** builds (`-march=native -mtune=native`)
 
 
+If you want to configure/use a different preset that isn't in the list, compile and run the `preset_generator.cpp` to regenerate the list of presets.
+
+If you want add another sub-project to this CMake project, compile and run the `create_cmake_project.cpp`
+
+
 #### Quick configuration commands:
 
 ```
@@ -85,4 +90,19 @@ To achieve the re-build functionality (forcefully re-compile and build the proje
 cmake --build --preset msvc-native-debug
 cmake --build --preset clang-native-debug
 cmake --build --preset gccc-native-debug
+```
+
+## Running:
+
+You can find the compiled executable, from the given preset on this path (relative to project root):
+```
+./out/build/<preset name>/<sub-project name>/
+```
+
+#### Quick Run commands (based on quick build above):
+
+```
+./out/build/msvc-native-debug/Naive/Naive.exe
+./out/build/clang-native-debug/Greedy/Greedy
+./out/build/gcc-native-debug/Main/Main
 ```

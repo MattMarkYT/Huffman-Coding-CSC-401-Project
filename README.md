@@ -11,3 +11,9 @@ Some IDE's, like Visual Studio, take the task of configuring and building the pr
 For VS specifically, this changes the whole process to selecting one of the build presets and using it as desired.
 
 You can read on how to compile the project using command line in [BUILDING.md](./BUILDING.md)
+
+
+
+If you want to configure/use a different preset that isn't in the list, compile and run the `preset_generator.cpp` to regenerate the list of presets.
+
+If you want add another sub-project to this CMake project, compile and run the `create_cmake_project.cpp`
