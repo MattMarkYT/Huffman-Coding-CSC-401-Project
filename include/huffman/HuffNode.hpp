@@ -1,10 +1,10 @@
 
 struct HuffNode {
 
-    HuffNode(byte d, int f) : data(d), frequency(f) {}
+    HuffNode(std::byte d, int f) : data(d), frequency(f) {}
     HuffNode(int f, HuffNode* l, HuffNode* r) : frequency(f), left(l), right(r) {}
 
-    byte data;
+    std::byte data;
     int frequency;
     HuffNode* left;
     HuffNode* right;
