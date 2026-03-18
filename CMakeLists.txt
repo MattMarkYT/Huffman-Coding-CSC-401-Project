@@ -21,6 +21,11 @@ if (MSVC AND POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
+include_directories(
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+
 project ("Huffman-Coding-CSC-401-Project")
 
 # Include sub-projects.

@@ -1,4 +1,5 @@
 #include <iostream>
+#include "huffman/HuffNode.hpp"
 
 int main(){
 
