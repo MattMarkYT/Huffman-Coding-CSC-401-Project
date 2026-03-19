@@ -1,10 +1,12 @@
+#ifndef HUFFNODE_HPP
+#define HUFFNODE_HPP
 
 struct HuffNode {
 
-    HuffNode(std::byte d, int f) : data(d), frequency(f) {}
+    HuffNode(unsigned char d, int f) : data(d), frequency(f), left(nullptr), right(nullptr) {}
     HuffNode(int f, HuffNode* l, HuffNode* r) : frequency(f), left(l), right(r) {}
 
-    std::byte data;
+    unsigned char data;
     int frequency;
     HuffNode* left;
     HuffNode* right;
@@ -14,3 +16,12 @@ struct HuffNode {
     }
 
 };
+
+struct CompareHuffNodePtr {
+    bool operator()(const HuffNode* first, const HuffNode* second) const {
+        // Dereference and compare the actual values
+        return first->frequency > second->frequency;
+    }
+};
+
+#endif // HUFFNODE_HPP
