@@ -1,27 +1,101 @@
 #include "huffman/naive.hpp"
+#include <cmath>
 #include <unordered_set>
+#include <istream>
 
-// The returned map should be bytes and their string representation e.g. j -> "0001"
-// With Naive, each character uses the same amount of bits
-// You can use c++'s unordered set to find all unique characters in the file
-// USE MALLOC OR THE MAP WILL BE DESTROYED DUE TO SCOPE
 std::unordered_map<std::byte, std::string> createHuffmanMap(std::istream& file) {
+    std::unordered_set<std::byte> bytes;
+    char c;
+    while (file.get(c)) {
+        bytes.insert(static_cast<std::byte>(static_cast<unsigned char>(c)));
+    }
+    int total = (bytes.size() <= 1) ? 1 : (int)std::ceil(std::log2(bytes.size()));
 
-    // return ; // DO NOT FORGET
+    std::unordered_map<std::byte, std::string> map;
+    int code = 0;
+    for (std::byte currentByte : bytes) {
+        std::string bits = "";
+        for (int i = total - 1; i >= 0; --i) {
+            if ((code & (1 << i)) != 0) {
+                bits += '1';
+            } else {
+                bits += '0';
+            }
+        }
+        map[currentByte] = bits;
+        ++code;
+    }
+    file.clear();
+    file.seekg(0);
+    return map;
 }
 
-// Create a std::vector<std::byte> and a temp byte
-// You have the outer loop reading the file. inner loop going through the string, writing the encoded data into the temp byte.
-// After each character, you should check if you've reached the end of the byte. If so, push it into the vector.
-// vector is kind of like java's ArrayList. Look into its functions online. (push_back function)
-// vector does not require malloc and will not be destroyed from scope if returned.
+
 std::vector<std::byte> encode(std::istream& file, const std::unordered_map<std::byte, std::string> map) {
+    std::vector<std::byte> encodedData;
+    std::byte buffer{0};
+    int bitPos = 7;
 
-    // return ; // DO NOT FORGET
+    char c;
+    while (file.get(c)) {
+
+        const std::string& bits = map.at(std::byte(static_cast<unsigned char>(c)));
+
+        for (char bit : bits) {
+            if (bit == '1') {
+                buffer |= std::byte(1 << bitPos);
+            }
+            --bitPos;
+            if (bitPos < 0) {
+                encodedData.push_back(buffer);
+                buffer = std::byte{0};
+                bitPos = 7;
+            }
+        }
+    }
+    if (bitPos != 7) {
+        encodedData.push_back(buffer);
+    }
+
+    file.clear();
+    file.seekg(0);
+    return encodedData;
+
 }
 
-// Here you will just do the reverse of what you did in encode
 std::vector<std::byte> decode(std::istream& file, const std::unordered_map<std::byte, std::string> map) {
 
-    // return ; // DO NOT FORGET
+    std::unordered_map<std::string, std::byte> reverseMap;
+    for (const auto& [byte, bits] : map) {
+        reverseMap[bits] = byte;
+    }
+
+    std::vector<std::byte> decodedData;
+    std::string current;
+    char c;
+    int total = map.empty() ? 0 : map.begin()->second.size();
+    current.reserve(total);
+    while (file.get(c)) {
+        std::byte encodedByte = static_cast<std::byte>(static_cast<unsigned char>(c));
+
+        for (int i = 7; i >= 0; --i) {
+            if ((encodedByte & std::byte(1 << i)) != std::byte(0)) {
+                current += '1';
+            } else {
+                current += '0';
+            }
+
+            if ((int)current.size() == total) {
+                auto it = reverseMap.find(current);
+                if (it != reverseMap.end()) {
+                    decodedData.push_back(it->second);
+                }
+                current.clear();
+            }
+        }
+    }
+
+    file.clear();
+    file.seekg(0);
+    return decodedData;
 }
