@@ -12,7 +12,7 @@ int main(){
 	cout << "Enter a String to compress: ";
 
 	string userInput;
-	cin >> userInput;
+	getline(cin, userInput);
 
 	cout << "Original String size: "; cout << userInput.size(); cout << " bytes" << endl;
 

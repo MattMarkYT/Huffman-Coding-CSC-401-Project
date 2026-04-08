@@ -3,32 +3,34 @@
 #include <vector>
 #include "huffman/naive.hpp"
 
+using namespace std;
+
 int main(){
-	std::cout << "Enter a String to compress: ";
-	std::string userInput;
-	std::cin >> userInput;
+	cout << "Enter a String to compress: ";
+	string userInput;
+	getline(cin, userInput);
 
-	std::cout << "Original String size: " << userInput.size() << " bytes" << std::endl;
+	cout << "Original String size: " << userInput.size() << " bytes" << endl;
 
-	std::istringstream inputData(userInput);
+	istringstream inputData(userInput);
 	auto huffmanMap = createHuffmanMap(inputData);
 
-	std::vector<std::byte> encodedData = encode(inputData, huffmanMap);
-	std::string encodedStr;
-	for (std::byte b : encodedData) {
-		encodedStr += static_cast<char>(std::to_integer<unsigned char>(b));
+	vector<unsigned char> encodedData = encode(inputData, huffmanMap);
+	string encodedStr;
+	for (unsigned char b : encodedData) {
+		encodedStr += static_cast<char>(b);
 	}
-	std::cout << "Compressed String size: " << encodedStr.size() << " bytes" << std::endl;
+	cout << "Compressed String size: " << encodedStr.size() << " bytes" << endl;
 
-	std::istringstream encodedStream(encodedStr);
-	std::vector<std::byte> decodedData = decode(encodedStream, huffmanMap);
-	std::string decodedStr;
-	for (std::byte b : decodedData) {
-		decodedStr += static_cast<char>(std::to_integer<unsigned char>(b));
+	istringstream encodedStream(encodedStr);
+	vector<unsigned char> decodedData = decode(encodedStream, huffmanMap);
+	string decodedStr;
+	for (unsigned char b : decodedData) {
+		decodedStr += static_cast<char>(b);
 	}
 
-	std::cout << "Decompressed String size: " << decodedData.size() << " bytes" << std::endl;
-	std::cout << "Decompressed String: " << std::endl << decodedStr << std::endl;
+	cout << "Decompressed String size: " << decodedData.size() << " bytes" << endl;
+	cout << "Decompressed String: " << endl << decodedStr << endl;
 
 	return 0;
 }
