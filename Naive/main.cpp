@@ -6,7 +6,7 @@
 int main(){
 	std::cout << "Enter a String to compress: ";
 	std::string userInput;
-	std::getline(std::cin, userInput);
+	std::cin >> userInput;
 
 	std::cout << "Original String size: " << userInput.size() << " bytes" << std::endl;
 
