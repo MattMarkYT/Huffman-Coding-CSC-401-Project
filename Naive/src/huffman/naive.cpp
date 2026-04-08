@@ -1,19 +1,26 @@
 #include "huffman/naive.hpp"
 #include <cmath>
+#include <iostream>
 #include <unordered_set>
 #include <istream>
 
-std::unordered_map<std::byte, std::string> createHuffmanMap(std::istream& file) {
-    std::unordered_set<std::byte> bytes;
+std::unordered_map<unsigned char, std::string> createHuffmanMap(std::istream& file) {
+    if (!file.good()) {
+        std::cout << "File is not in good state. Returning empty map";
+        return {};
+    }
+    const int beginning = file.tellg();
+
+    std::unordered_set<unsigned char> bytes;
     char c;
     while (file.get(c)) {
-        bytes.insert(static_cast<std::byte>(static_cast<unsigned char>(c)));
+        bytes.insert(static_cast<unsigned char>(static_cast<unsigned char>(c)));
     }
     int total = (bytes.size() <= 1) ? 1 : (int)std::ceil(std::log2(bytes.size()));
 
-    std::unordered_map<std::byte, std::string> map;
+    std::unordered_map<unsigned char, std::string> map;
     int code = 0;
-    for (std::byte currentByte : bytes) {
+    for (unsigned char currentByte : bytes) {
         std::string bits = "";
         for (int i = total - 1; i >= 0; --i) {
             if ((code & (1 << i)) != 0) {
@@ -26,29 +33,35 @@ std::unordered_map<std::byte, std::string> createHuffmanMap(std::istream& file) 
         ++code;
     }
     file.clear();
-    file.seekg(0);
+    file.seekg(beginning);
     return map;
 }
 
 
-std::vector<std::byte> encode(std::istream& file, const std::unordered_map<std::byte, std::string> map) {
-    std::vector<std::byte> encodedData;
-    std::byte buffer{0};
+std::vector<unsigned char> encode(std::istream& file, const std::unordered_map<unsigned char, std::string> map) {
+    if (!file.good()) {
+        std::cout << "File is not in good state. Returning empty unsigned char vector";
+        return {};
+    }
+    const int beginning = file.tellg();
+
+    std::vector<unsigned char> encodedData;
+    unsigned char buffer{0};
     int bitPos = 7;
 
     char c;
     while (file.get(c)) {
 
-        const std::string& bits = map.at(std::byte(static_cast<unsigned char>(c)));
+        const std::string& bits = map.at(static_cast<unsigned char>(c));
 
         for (char bit : bits) {
             if (bit == '1') {
-                buffer |= std::byte(1 << bitPos);
+                buffer |= static_cast<unsigned char>(1 << bitPos);
             }
             --bitPos;
             if (bitPos < 0) {
                 encodedData.push_back(buffer);
-                buffer = std::byte{0};
+                buffer = 0;
                 bitPos = 7;
             }
         }
@@ -58,28 +71,33 @@ std::vector<std::byte> encode(std::istream& file, const std::unordered_map<std::
     }
 
     file.clear();
-    file.seekg(0);
+    file.seekg(beginning);
     return encodedData;
 
 }
 
-std::vector<std::byte> decode(std::istream& file, const std::unordered_map<std::byte, std::string> map) {
+std::vector<unsigned char> decode(std::istream& file, const std::unordered_map<unsigned char, std::string> map) {
+    if (!file.good()) {
+        std::cout << "File is not in good state. Returning empty unsigned char vector";
+        return {};
+    }
+    const int beginning = file.tellg();
 
-    std::unordered_map<std::string, std::byte> reverseMap;
+    std::unordered_map<std::string, unsigned char> reverseMap;
     for (const auto& [byte, bits] : map) {
         reverseMap[bits] = byte;
     }
 
-    std::vector<std::byte> decodedData;
+    std::vector<unsigned char> decodedData;
     std::string current;
     char c;
     int total = map.empty() ? 0 : map.begin()->second.size();
     current.reserve(total);
     while (file.get(c)) {
-        std::byte encodedByte = static_cast<std::byte>(static_cast<unsigned char>(c));
+        auto encodedByte = static_cast<unsigned char>(c);
 
         for (int i = 7; i >= 0; --i) {
-            if ((encodedByte & std::byte(1 << i)) != std::byte(0)) {
+            if ((encodedByte & static_cast<unsigned char>(1 << i)) != static_cast<unsigned char>(0)) {
                 current += '1';
             } else {
                 current += '0';
@@ -96,6 +114,6 @@ std::vector<std::byte> decode(std::istream& file, const std::unordered_map<std::
     }
 
     file.clear();
-    file.seekg(0);
+    file.seekg(beginning);
     return decodedData;
 }

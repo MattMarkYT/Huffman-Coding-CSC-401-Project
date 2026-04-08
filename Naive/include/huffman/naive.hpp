@@ -4,10 +4,10 @@
 #include <unordered_map>
 #include <vector>
 
-std::unordered_map<std::byte, std::string> createHuffmanMap(std::istream& file);
+std::unordered_map<unsigned char, std::string> createHuffmanMap(std::istream& file);
 
-std::vector<std::byte> encode(std::istream& file, std::unordered_map<std::byte, std::string> map);
+std::vector<unsigned char> encode(std::istream& file, std::unordered_map<unsigned char, std::string> map);
 
-std::vector<std::byte> decode(std::istream& file, std::unordered_map<std::byte, std::string> map);
+std::vector<unsigned char> decode(std::istream& file, std::unordered_map<unsigned char, std::string> map);
 
 #endif // NAIVE_HPP

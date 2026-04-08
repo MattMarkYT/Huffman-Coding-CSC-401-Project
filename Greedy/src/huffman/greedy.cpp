@@ -13,6 +13,7 @@ HuffNode* createHuffmanTree(istream& file) {
         cout << "File is not in good state. Returning nullptr";
         return nullptr;
     }
+    const int beginning = file.tellg();
 
     // I'm going to loop through the stream and collect frequencies
     // Each time I run into a char, I'll increment the frequency by 1.
@@ -43,12 +44,18 @@ HuffNode* createHuffmanTree(istream& file) {
 
     // Move file pointer back to the beginning
     file.clear();    // Clear error flags from reaching the end
-    file.seekg(0);   // return pointer to beginnning of file.
+    file.seekg(beginning);   // return pointer to beginning of file.
 
     return root;
 }
 
 vector<unsigned char> encode(istream& file, HuffNode* tree) {
+    if (!file.good()) {
+        cout << "File is not in good state. Returning empty unsigned char vector";
+        return {};
+    }
+    const int beginning = file.tellg();
+
     // Generate huffman codes as strings to use during encoding
     unordered_map<unsigned char, string> codes;
     generateCodes(codes, tree, "");
@@ -79,12 +86,18 @@ vector<unsigned char> encode(istream& file, HuffNode* tree) {
 
     // Move file pointer back to the beginning
     file.clear();    // Clear error flags from reaching the end
-    file.seekg(0);   // return pointer to beginnning of file.
+    file.seekg(beginning);   // return pointer to beginning of file.
 
     return encodedData;
 }
 
 vector<unsigned char> decode(istream& file, HuffNode* root) {
+    if (!file.good()) {
+        cout << "File is not in good state. Returning empty unsigned char vector";
+        return {};
+    }
+    const int beginning = file.tellg();
+
     vector<unsigned char> decodedData;
     char currentByte;
     HuffNode* node = root;
@@ -109,7 +122,7 @@ vector<unsigned char> decode(istream& file, HuffNode* root) {
 
     // Move file pointer back to the beginning
     file.clear();    // Clear error flags from reaching the end
-    file.seekg(0);   // return pointer to beginnning of file.
+    file.seekg(beginning);   // return pointer to beginning of file.
 
     return decodedData;
 }
