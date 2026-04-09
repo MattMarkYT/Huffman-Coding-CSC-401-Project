@@ -28,7 +28,7 @@ int main(){
 
 	istringstream encodedInputData(encodedStr);
 
-	vector<unsigned char> decodedData = decode(encodedInputData, root);
+	vector<unsigned char> decodedData = decode(encodedInputData, root, userInput.size());
 	string decodedStr(decodedData.begin(), decodedData.end());
 
 	cout << "Decompressed String size: "; cout << decodedData.size(); cout << " bytes" << endl;
