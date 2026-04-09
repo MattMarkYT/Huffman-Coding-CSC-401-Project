@@ -11,6 +11,6 @@ HuffNode* createHuffmanTree(std::istream& file);
 
 std::vector<unsigned char> encode(std::istream& file, HuffNode* tree);
 
-std::vector<unsigned char> decode(std::istream& file, HuffNode* root);
+std::vector<unsigned char> decode(std::istream& file, HuffNode* root, size_t originalSize);
 
 #endif // GREEDY_HPP
