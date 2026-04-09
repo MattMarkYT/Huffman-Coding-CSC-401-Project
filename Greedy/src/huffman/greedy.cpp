@@ -91,7 +91,7 @@ vector<unsigned char> encode(istream& file, HuffNode* tree) {
     return encodedData;
 }
 
-vector<unsigned char> decode(istream& file, HuffNode* root) {
+vector<unsigned char> decode(istream& file, HuffNode* root, std::size_t originalSize) {
     if (!file.good()) {
         cout << "File is not in good state. Returning empty unsigned char vector";
         return {};
@@ -101,8 +101,8 @@ vector<unsigned char> decode(istream& file, HuffNode* root) {
     vector<unsigned char> decodedData;
     char currentByte;
     HuffNode* node = root;
-    while (file.get(currentByte)) {
-        for (int onBit = 7; onBit >= 0; onBit--) {     // Reading bits from left to right
+    while (decodedData.size()<originalSize && file.read(reinterpret_cast<char*>(&currentByte), 1)) {
+        for (int onBit = 7; onBit >= 0 && decodedData.size()<originalSize; onBit--) {     // Reading bits from left to right
             if ((currentByte & (1 << onBit)) == 0) {   // If current bit is 0,
                 node = node->left;                     // go left.
                 if (node->left == nullptr) {           // If that node is a deadend,
