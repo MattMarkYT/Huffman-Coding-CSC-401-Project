@@ -11,3 +11,4 @@ target_link_libraries(Main PUBLIC Main_incLib)
 
 target_link_libraries(Main PUBLIC Naive_incLib)
 target_link_libraries(Main PUBLIC Greedy_incLib)
+target_link_libraries(Main PUBLIC TimeKeeper_incLib)
