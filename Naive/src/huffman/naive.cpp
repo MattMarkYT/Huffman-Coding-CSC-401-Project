@@ -18,13 +18,13 @@ unordered_map<unsigned char, string> createHuffmanMap(istream& file) {
     while (file.get(c)) {
         bytes.insert(static_cast<unsigned char>(static_cast<unsigned char>(c)));
     }
-    int total = (bytes.size() <= 1) ? 1 : (int)ceil(log2(bytes.size()));
+    int codeLength = (bytes.size() <= 1) ? 1 : (int)ceil(log2(bytes.size()));
 
     unordered_map<unsigned char, string> map;
     int code = 0;
     for (unsigned char currentByte : bytes) {
         string bits = "";
-        for (int i = total - 1; i >= 0; --i) {
+        for (int i = codeLength - 1; i >= 0; --i) {
             if ((code & (1 << i)) != 0) {
                 bits += '1';
             } else {
@@ -85,33 +85,37 @@ vector<unsigned char> decode(istream& file, const unordered_map<unsigned char, s
     }
     const int beginning = file.tellg();
 
-    unordered_map<string, unsigned char> reverseMap;
-    for (const auto& [byte, bits] : map) {
-        reverseMap[bits] = byte;
+    const int codeLength = map.empty() ? 0 : static_cast<int>(map.begin()->second.length());
+    unordered_map<unsigned char, unsigned char> reverseMap;
+    for (const auto& [oldByte, oldCode] : map) {
+        // converting string representation of code to byte
+        unsigned char code = 0;
+        unsigned char currentByte = codeLength - 1;
+        for (const char bit : oldCode) {
+            code |= (bit - 48) << currentByte;
+            currentByte--;
+        }
+
+        reverseMap[code] = oldByte;
     }
 
     vector<unsigned char> decodedData;
-    string current;
-    char c;
-    int total = map.empty() ? 0 : map.begin()->second.size();
-    current.reserve(total);
-    while (file.get(c)) {
-        auto encodedByte = static_cast<unsigned char>(c);
+    unsigned char encodedData;
+    unsigned char code = 0;
+    const unsigned char mask = static_cast<unsigned char>(255) >> (8 - codeLength);
+    int shift = 8 - codeLength;
+    while (file.get(reinterpret_cast<istream::char_type &>(encodedData))) {
+        while (true) {
+            code |= (encodedData >> shift) & mask;
+            decodedData.push_back(reverseMap[code]);
 
-        for (int i = 7; i >= 0; --i) {
-            if ((encodedByte & static_cast<unsigned char>(1 << i)) != static_cast<unsigned char>(0)) {
-                current += '1';
-            } else {
-                current += '0';
+            shift -= codeLength;
+            if (shift < 0) {
+                code = (encodedData << -shift) & mask;
+                shift += 8;
+                break;
             }
-
-            if ((int)current.size() == total) {
-                auto it = reverseMap.find(current);
-                if (it != reverseMap.end()) {
-                    decodedData.push_back(it->second);
-                }
-                current.clear();
-            }
+            code = 0;
         }
     }
 
