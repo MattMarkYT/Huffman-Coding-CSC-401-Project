@@ -134,7 +134,6 @@ void generateCodes(unordered_map<unsigned char, string>& map, HuffNode* node, st
     }
     else {
         map.insert_or_assign(node->data, str);
-        cout << node->data << " | " + str << endl;
         return;
     }
     if (node->right != nullptr) {
@@ -142,6 +141,6 @@ void generateCodes(unordered_map<unsigned char, string>& map, HuffNode* node, st
     }
     else {
         map.insert_or_assign(node->data, str);
-        cout << node->data << " | " + str << endl;
+
     }
 }
