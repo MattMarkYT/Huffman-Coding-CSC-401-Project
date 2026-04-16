@@ -17,13 +17,6 @@ struct File {
 	size_t size;
 };
 
-void deleteTree(HuffNode* node) {
-	if (node == nullptr) return;
-	deleteTree(node->left);
-	deleteTree(node->right);
-	delete node;
-}
-
 void batchTest(bool isGreedy) {
 	int count = 0;
 	string inputFolder = "input";

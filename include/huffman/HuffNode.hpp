@@ -24,4 +24,11 @@ struct CompareHuffNodePtr {
     }
 };
 
+inline void deleteTree(const HuffNode* node) {
+    if (node == nullptr) return;
+    deleteTree(node->left);
+    deleteTree(node->right);
+    delete node;
+}
+
 #endif // HUFFNODE_HPP
