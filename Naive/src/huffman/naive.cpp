@@ -78,7 +78,7 @@ vector<unsigned char> encode(istream& file, const unordered_map<unsigned char, s
 
 }
 
-vector<unsigned char> decode(istream& file, const unordered_map<unsigned char, string> map) {
+vector<unsigned char> decode(istream& file, const unordered_map<unsigned char, string> map, size_t originalSize) {
     if (!file.good()) {
         cout << "File is not in good state. Returning empty unsigned char vector";
         return {};
@@ -118,6 +118,9 @@ vector<unsigned char> decode(istream& file, const unordered_map<unsigned char, s
             code = 0;
         }
     }
+    // Trim padded bits interpreted as data
+    while (decodedData.size() > originalSize)
+        decodedData.pop_back();
 
     file.clear();
     file.seekg(beginning);

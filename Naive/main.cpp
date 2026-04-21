@@ -23,7 +23,7 @@ int main(){
 	cout << "Compressed String size: " << encodedStr.size() << " bytes" << endl;
 
 	istringstream encodedStream(encodedStr);
-	vector<unsigned char> decodedData = decode(encodedStream, huffmanMap);
+	vector<unsigned char> decodedData = decode(encodedStream, huffmanMap, userInput.size());
 	string decodedStr;
 	for (unsigned char b : decodedData) {
 		decodedStr += static_cast<char>(b);
