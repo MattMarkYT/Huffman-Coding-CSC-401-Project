@@ -38,3 +38,5 @@ add_subdirectory("Greedy")
 add_subdirectory("TimeKeeper")
 
 add_subdirectory ("FileManager")
+
+add_subdirectory ("BruhManager")

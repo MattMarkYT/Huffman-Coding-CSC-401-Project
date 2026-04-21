@@ -4,6 +4,7 @@ target_include_directories(Greedy_incLib INTERFACE
 )
 file(GLOB_RECURSE Greedy_incLib_SOURCES CONFIGURE_DEPENDS
 "${CMAKE_CURRENT_LIST_DIR}/src/huffman/*.cpp"
+        "../BruhManager/src/*.cpp"
 )
 target_sources(Greedy_incLib INTERFACE ${Greedy_incLib_SOURCES})
 add_executable(Greedy main.cpp)

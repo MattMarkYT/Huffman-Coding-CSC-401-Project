@@ -16,19 +16,19 @@ unordered_map<unsigned char, string> createHuffmanMap(istream& file) {
     unordered_set<unsigned char> bytes;
     char c;
     while (file.get(c)) {
-        bytes.insert(static_cast<unsigned char>(static_cast<unsigned char>(c)));
+        bytes.insert(static_cast<unsigned char>(c));
     }
     int codeLength = (bytes.size() <= 1) ? 1 : (int)ceil(log2(bytes.size()));
 
     unordered_map<unsigned char, string> map;
     int code = 0;
     for (unsigned char currentByte : bytes) {
-        string bits = "";
+        string bits;
         for (int i = codeLength - 1; i >= 0; --i) {
             if ((code & (1 << i)) != 0) {
-                bits += '1';
+                bits += "1";
             } else {
-                bits += '0';
+                bits += "0";
             }
         }
         map[currentByte] = bits;
