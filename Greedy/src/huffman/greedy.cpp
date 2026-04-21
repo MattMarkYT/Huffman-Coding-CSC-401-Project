@@ -42,6 +42,11 @@ HuffNode* createHuffmanTree(istream& file) {
     }
     HuffNode* root = pq.top(); pq.pop();   // Pointers make me paranoid
 
+    // A fix so that root is always empty (Fixes string that uses only one character doesn't comeback empty)
+    if (root->left == nullptr && root->right == nullptr) {
+        root = new HuffNode(0,root, nullptr);
+    }
+
     // Move file pointer back to the beginning
     file.clear();    // Clear error flags from reaching the end
     file.seekg(beginning);   // return pointer to beginning of file.
