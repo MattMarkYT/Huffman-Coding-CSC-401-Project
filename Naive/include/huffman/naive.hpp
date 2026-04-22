@@ -8,6 +8,6 @@ std::unordered_map<unsigned char, std::string> createHuffmanMap(std::istream& fi
 
 std::vector<unsigned char> encode(std::istream& file, std::unordered_map<unsigned char, std::string> map);
 
-std::vector<unsigned char> decode(std::istream& file, const std::unordered_map<unsigned char, std::string> map);
+std::vector<unsigned char> decode(std::istream& file, std::unordered_map<unsigned char, std::string> map, size_t originalSize);
 
 #endif // NAIVE_HPP

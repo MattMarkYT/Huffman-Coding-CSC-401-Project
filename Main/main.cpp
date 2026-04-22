@@ -113,7 +113,7 @@ void batchTest(bool isGreedy) {
 
 			resetTimer();
 			startTimer();
-			vector<unsigned char> decodedData = decode(encodedStream, huffmanMap);
+			vector<unsigned char> decodedData = decode(encodedStream, huffmanMap, currentFile.size);
 			stopTimer();
 			saveTimer("Decoding");
 
@@ -181,7 +181,7 @@ void naiveManual() {
 	cout << "Compressed String size: " << encodedStr.size() << " bytes" << endl;
 
 	istringstream encodedStream(encodedStr);
-	vector<unsigned char> decodedData = decode(encodedStream, huffmanMap);
+	vector<unsigned char> decodedData = decode(encodedStream, huffmanMap,  userInput.size());
 	string decodedStr(decodedData.begin(), decodedData.end());
 
 	cout << "Decompressed String size: " << decodedData.size() << " bytes" << endl;

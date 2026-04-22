@@ -29,9 +29,7 @@ int main(){
 	createFile(filename, encodedData, huffmanMap, userInput.size());
 
 	istringstream encodedStream(encodedStr);
-	cout << "test1" << endl;
-	vector<unsigned char> decodedData = decode(encodedStream, huffmanMap);
-	cout << "test2" << endl;
+	vector<unsigned char> decodedData = decode(encodedStream, huffmanMap, userInput.size());
 	string decodedStr;
 	for (unsigned char b : decodedData) {
 		decodedStr += static_cast<char>(b);
