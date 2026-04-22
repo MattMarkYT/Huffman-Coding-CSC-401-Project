@@ -43,7 +43,7 @@ int main(){
 	ifstream file("bruh.txt.nf", std::ios::binary);
 	NaiveRecord* record = decodeNaiveFile(file);
 
-	vector<unsigned char> decodedFile = decode(file, record->naiveMap);
+	vector<unsigned char> decodedFile = decode(file, record->naiveMap, encodedData.size());
 	string decodedStr2(decodedData.begin(), decodedData.end());
 	cout << "Decompressed String: " << endl; cout << decodedStr << endl;
 	createFile("bruh.txt.nf", decodedFile);
