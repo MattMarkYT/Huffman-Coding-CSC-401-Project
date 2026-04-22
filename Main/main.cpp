@@ -7,7 +7,7 @@
 #include "../Greedy/include/huffman/greedy.hpp"
 #include "../Naive/include/huffman/naive.hpp"
 #include "../TimeKeeper/include/huffman/timekeeper.h"
-
+#include "../BruhManager/include/bruhmanager.h"
 using namespace std;
 
 
@@ -108,12 +108,14 @@ void batchTest(bool isGreedy) {
 			stopTimer();
 			saveTimer("Encoding");
 
-			string encodedStr(encodedData.begin(), encodedData.end());
-			istringstream encodedStream(encodedStr);
+			createFile(currentFile.filename, encodedData, huffmanMap, (int)currentFile.size);
+
+			ifstream encodedFile(currentFile.filename + ".nf", ios::binary);
+			NaiveRecord* record = decodeNaiveFile(encodedFile);
 
 			resetTimer();
 			startTimer();
-			vector<unsigned char> decodedData = decode(encodedStream, huffmanMap, currentFile.size);
+			vector<unsigned char> decodedData = decode(encodedFile, record->naiveMap, record->ogLength);
 			stopTimer();
 			saveTimer("Decoding");
 
@@ -129,6 +131,7 @@ void batchTest(bool isGreedy) {
 				   << timerGetTotalMilli("Decoding") << ","
 				   << (isVerified ? "YES" : "NO") << "\n";
 			count++;
+			delete record;
 		}
 		file.close();
 	}
