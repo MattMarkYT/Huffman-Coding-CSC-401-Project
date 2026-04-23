@@ -81,10 +81,23 @@ void batchTest(bool isGreedy) {
 				continue;
 			}
 
-			manager.openFileR(currentFile.filename + ".hhuf", FMFileType::huffman, false);
+			if (manager.openFileR(currentFile.filename + ".hhuf", FMFileType::huffman, false) != FMErrorCode::none) {
+				cout << "openFileR failed, skipping." << endl;
+				deleteTree(root);
+				continue;
+			}
 			HuffNode* readRoot = nullptr;
-			manager.parseDictionary(readRoot, false);
-			manager.jumpToData(false);
+			if (manager.parseDictionary(readRoot, false) != FMErrorCode::none) {
+				cout << "parseDictionary failed, skipping." << endl;
+				deleteTree(root);
+				continue;
+			}
+			if (manager.jumpToData(false) != FMErrorCode::none) {
+				cout << "jumpToData failed, skipping." << endl;
+				deleteTree(readRoot);
+				deleteTree(root);
+				continue;
+			}
 			uint64_t decodedLength = manager.getDecodedPayloadLength();
 			shared_ptr<fstream> encodedStream = manager.detachStream();
 
@@ -128,9 +141,18 @@ void batchTest(bool isGreedy) {
 				cout << "writeFormat failed, skipping." << endl;
 				continue;
 			}
-			manager.openFileR(currentFile.filename + ".hnai", FMFileType::naive, false);
-			manager.parseDictionary(huffmanMap, false);
-			manager.jumpToData(false);
+			if (manager.openFileR(currentFile.filename + ".hnai", FMFileType::naive, false) != FMErrorCode::none) {
+				cout << "openFileR failed, skipping." << endl;
+				continue;
+			}
+			if (manager.parseDictionary(huffmanMap, false) != FMErrorCode::none) {
+				cout << "parseDictionary failed, skipping." << endl;
+				continue;
+			}
+			if (manager.jumpToData(false) != FMErrorCode::none) {
+				cout << "jumpToData failed, skipping." << endl;
+				continue;
+			}
 			uint64_t decodedLength = manager.getDecodedPayloadLength();
 			shared_ptr<fstream> encodedStream = manager.detachStream();
 
