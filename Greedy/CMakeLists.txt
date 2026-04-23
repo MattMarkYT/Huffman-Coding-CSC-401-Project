@@ -5,6 +5,15 @@ target_include_directories(Greedy_incLib INTERFACE
 file(GLOB_RECURSE Greedy_incLib_SOURCES CONFIGURE_DEPENDS
 "${CMAKE_CURRENT_LIST_DIR}/src/huffman/*.cpp"
 )
+
+target_compile_features(Greedy_incLib INTERFACE cxx_std_20)
+file(GLOB_RECURSE Greedy_HEADERS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_LIST_DIR}/include/*.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/*.hpp"
+)
+
+target_sources(Greedy_incLib INTERFACE ${Greedy_HEADERS})
+
 target_sources(Greedy_incLib INTERFACE ${Greedy_incLib_SOURCES})
 add_executable(Greedy main.cpp)
 target_link_libraries(Greedy PUBLIC Greedy_incLib)
