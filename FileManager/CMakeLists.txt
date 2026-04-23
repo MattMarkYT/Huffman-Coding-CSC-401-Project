@@ -7,5 +7,7 @@ file(GLOB_RECURSE FileManager_incLib_SOURCES CONFIGURE_DEPENDS
 )
 
 target_sources(FileManager_incLib INTERFACE ${FileManager_incLib_SOURCES})
-add_executable(FileManager main.cpp)
+add_executable(FileManager main.cpp "fm_tests.hpp")
+target_link_libraries(FileManager PUBLIC Naive_incLib)
+target_link_libraries(FileManager PUBLIC Greedy_incLib)
 target_link_libraries(FileManager PUBLIC FileManager_incLib)
