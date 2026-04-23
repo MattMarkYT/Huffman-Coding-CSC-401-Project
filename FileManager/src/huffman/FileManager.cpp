@@ -1076,7 +1076,7 @@ FMErrorCode FileManager::writeNaiveDictionary(
 
 		if (logging || FM_FORCE_LOG) {
 			std::cout << "writeNaiveDictionary: "
-				<< hexByte(symbol) << " -> " << code << '\n';
+				<< hexByte(symbol) << " -> " << code << " (ascii: " << symbol << ") \n";
 		}
 	}
 
@@ -1153,7 +1153,7 @@ FMErrorCode FileManager::writeHuffmanDictionary(
 
 		if (logging || FM_FORCE_LOG) {
 			std::cout << "writeHuffmanDictionary: "
-				<< hexByte(symbol) << " -> " << code << '\n';
+				<< hexByte(symbol) << " -> " << code << " (ascii: " << symbol << ") \n";
 		}
 	}
 
