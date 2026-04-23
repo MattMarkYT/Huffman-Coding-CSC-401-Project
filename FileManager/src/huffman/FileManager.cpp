@@ -267,7 +267,7 @@ FMErrorCode FileManager::parseDictionary(
 
 		if (logging || FM_FORCE_LOG) {
 			std::cout << "parseDictionary(naive): "
-				<< hexByte(symbol) << " -> " << code << '\n';
+				<< hexByte(symbol) << " -> " << code << " (ascii: " << symbol << ") \n";
 		}
 	}
 
@@ -357,7 +357,7 @@ FMErrorCode FileManager::parseDictionary(HuffNode*& outRoot, bool logging) {
 
 		if (logging || FM_FORCE_LOG) {
 			std::cout << "parseDictionary(huffman): "
-				<< hexByte(symbol) << " -> " << code << '\n';
+				<< hexByte(symbol) << " -> " << code << " (ascii: "<<symbol << ") \n";
 		}
 	}
 
