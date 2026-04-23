@@ -81,7 +81,7 @@ void batchTest(bool isGreedy) {
 				continue;
 			}
 
-			if (manager.openFileR(currentFile.filename + ".hhuf", FMFileType::huffman, false) != FMErrorCode::none) {
+			if (manager.openFileR(FileManager::buildOutputFileName(currentFile.filename, FMFileType::huffman), FMFileType::huffman, false) != FMErrorCode::none) {
 				cout << "openFileR failed, skipping." << endl;
 				deleteTree(root);
 				continue;
@@ -141,7 +141,7 @@ void batchTest(bool isGreedy) {
 				cout << "writeFormat failed, skipping." << endl;
 				continue;
 			}
-			if (manager.openFileR(currentFile.filename + ".hnai", FMFileType::naive, false) != FMErrorCode::none) {
+			if (manager.openFileR(FileManager::buildOutputFileName(currentFile.filename, FMFileType::naive), FMFileType::naive, false) != FMErrorCode::none) {
 				cout << "openFileR failed, skipping." << endl;
 				continue;
 			}
