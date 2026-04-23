@@ -7,7 +7,8 @@
 #include "../Greedy/include/huffman/greedy.hpp"
 #include "../Naive/include/huffman/naive.hpp"
 #include "../TimeKeeper/include/huffman/timekeeper.h"
-
+#include "huffman/FileManager.hpp"
+#include "huffman/FMMisc.hpp"
 using namespace std;
 
 
@@ -72,12 +73,24 @@ void batchTest(bool isGreedy) {
 			stopTimer();
 			saveTimer("Encoding");
 
-			string encodedStr(encodedData.begin(), encodedData.end());
-			istringstream encodedStream(encodedStr);
+			FileManager manager;
+			FMErrorCode writeResult = manager.writeFormat(currentFile.filename, encodedData, currentFile.size, root, false, true);
+			if (writeResult != FMErrorCode::none) {
+				cout << "writeFormat failed, skipping." << endl;
+				deleteTree(root);
+				continue;
+			}
+
+			manager.openFileR(currentFile.filename + ".hhuf", FMFileType::huffman, false);
+			HuffNode* readRoot = nullptr;
+			manager.parseDictionary(readRoot, false);
+			manager.jumpToData(false);
+			uint64_t decodedLength = manager.getDecodedPayloadLength();
+			shared_ptr<fstream> encodedStream = manager.detachStream();
 
 			resetTimer();
 			startTimer();
-			vector<unsigned char> decodedData = decode(encodedStream, root, currentFile.size);
+			vector<unsigned char> decodedData = decode(*encodedStream, readRoot, (size_t)decodedLength);
 			stopTimer();
 			saveTimer("Decoding");
 
@@ -94,6 +107,7 @@ void batchTest(bool isGreedy) {
 				  << (isVerified ? "YES" : "NO") << "\n";
 			count++;
 
+			deleteTree(readRoot);
 			deleteTree(root);
 		} else {
 			resetTimer();
@@ -108,12 +122,21 @@ void batchTest(bool isGreedy) {
 			stopTimer();
 			saveTimer("Encoding");
 
-			string encodedStr(encodedData.begin(), encodedData.end());
-			istringstream encodedStream(encodedStr);
+			FileManager manager;
+			FMErrorCode writeResult = manager.writeFormat(currentFile.filename, encodedData, currentFile.size, huffmanMap, false, true);
+			if (writeResult != FMErrorCode::none) {
+				cout << "writeFormat failed, skipping." << endl;
+				continue;
+			}
+			manager.openFileR(currentFile.filename + ".hnai", FMFileType::naive, false);
+			manager.parseDictionary(huffmanMap, false);
+			manager.jumpToData(false);
+			uint64_t decodedLength = manager.getDecodedPayloadLength();
+			shared_ptr<fstream> encodedStream = manager.detachStream();
 
 			resetTimer();
 			startTimer();
-			vector<unsigned char> decodedData = decode(encodedStream, huffmanMap, currentFile.size);
+			vector<unsigned char> decodedData = decode(*encodedStream, huffmanMap, (size_t)decodedLength);
 			stopTimer();
 			saveTimer("Decoding");
 
