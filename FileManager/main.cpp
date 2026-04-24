@@ -18,11 +18,16 @@
 #include <utility>
 #include <vector>
 
+#include <chrono>
+
+#define FM_ENABLE_LOG true
+
 #include "huffman/FileManager.hpp"
 #include "huffman/naive.hpp"
 #include "huffman/greedy.hpp"
 
 #include "fm_tests.hpp"
+
 
 const char* errorCodeToString(FMErrorCode code) {
 	switch (code) {
@@ -347,6 +352,76 @@ skipped_format_choice:
 	std::cout << "Wrote file: " << FileManager::buildOutputFileName(outputName, writtenType) << "\n";
 }
 
+void decodedDataFlow(const std::string& stem, const std::vector<unsigned char>& decoded) {
+	while (true) {
+		std::cout << "\n\n1. Write decoded data to file\n";
+		std::cout << "2. Display decoded data\n";
+
+		int choice = 0;
+		if (!parseMenuChoice(readLine("Choose an option: "), choice)) {
+			std::cout << "Invalid choice.\n";
+			continue;
+		}
+
+		if (choice == 1) {
+
+			while (true) {
+				std::cout << "1. Remove extension from the file\n";
+				std::cout << "2. Write a new name for the uncompressed file\n";
+
+				int choice = 0;
+				if (!parseMenuChoice(readLine("Choose an option: "), choice)) {
+					std::cout << "Invalid choice.\n";
+					continue;
+				}
+
+				if (choice == 1) {
+					FMErrorCode err = FileManager::writePlain(stem, decoded);
+
+					if (err != FMErrorCode::none) {
+						std::cerr << errorCodeToString(err);
+						continue;
+					}
+
+					std::cout << "Done writing output to a file with removed extension." << std::endl;
+
+					break;
+				}
+
+				if (choice == 2) {
+					const std::string outputName = readLine("Output file name: ");
+					if (outputName.empty()) {
+						std::cout << "Cancelled.\n";
+						continue;
+					}
+					FMErrorCode err = FileManager::writePlain(outputName, decoded);
+
+					if (err != FMErrorCode::none) {
+						std::cerr << errorCodeToString(err);
+						continue;
+					}
+					std::cout << "Done writing output to a file with a new name." << std::endl;
+
+					break;
+				}
+
+				std::cout << "Invalid choice.\n";
+			}
+			return;
+
+		}
+
+		if (choice == 2) {
+			printPayload(decoded);
+			break;
+		}
+
+		std::cout << "Invalid choice.\n";
+	}
+
+}
+
+
 void decodeWrappedNaive(FileManager& manager) {
 	std::unordered_map<unsigned char, std::string> dictionary;
 	const FMErrorCode parseResult = manager.parseDictionary(dictionary, true);
@@ -362,6 +437,12 @@ void decodeWrappedNaive(FileManager& manager) {
 	}
 
 	const std::uint64_t decodedLength = manager.getDecodedPayloadLength();
+
+	//don't forget to get it before we detach!
+	//...probably shouldn't have done that
+	std::string stem = manager.getStem();
+
+
 	std::shared_ptr<std::fstream> stream = manager.detachStream();
 	if (stream == nullptr || !stream->is_open()) {
 		std::cout << "detachStream failed.\n";
@@ -369,7 +450,10 @@ void decodeWrappedNaive(FileManager& manager) {
 	}
 
 	std::vector<unsigned char> decoded = decode(*stream, dictionary, static_cast<std::size_t>(decodedLength));
-	printPayload(decoded);
+	
+	decodedDataFlow(stem, decoded);
+
+
 }
 
 void decodeWrappedHuffman(FileManager& manager) {
@@ -388,6 +472,9 @@ void decodeWrappedHuffman(FileManager& manager) {
 		return;
 	}
 
+
+	const std::string stem = manager.getStem();
+
 	const std::uint64_t decodedLength = manager.getDecodedPayloadLength();
 	std::shared_ptr<std::fstream> stream = manager.detachStream();
 	if (stream == nullptr || !stream->is_open()) {
@@ -398,7 +485,10 @@ void decodeWrappedHuffman(FileManager& manager) {
 
 	std::vector<unsigned char> decoded = decode(*stream, root, static_cast<std::size_t>(decodedLength));
 	deleteTree(root);
-	printPayload(decoded);
+
+	decodedDataFlow(stem, decoded);
+
+	//printPayload(decoded);
 }
 
 void openAndDecodeFlow() {
@@ -442,6 +532,7 @@ void openAndDecodeFlow() {
 			return;
 		}
 
+
 		std::cout << "Unhandled file type.\n";
 		manager.closeFile();
 		return;
@@ -454,34 +545,33 @@ int main() {
 	
 	testAllTheFMThings();
 
-	std::cout << "-------------------------------------------------------";
-
 	while (true) {
+		std::cout << "-------------------------------------------------------";
 		std::cout << "\nMain menu\n";
 		std::cout << "1. encode and write to file\n";
 		std::cout << "2. open file and decode\n";
 		std::cout << "3. exit\n";
-
+	
 		int choice = 0;
 		if (!parseMenuChoice(readLine("Choose an option: "), choice)) {
 			std::cout << "Invalid choice.\n";
 			continue;
 		}
-
+	
 		if (choice == 1) {
 			encodeAndWriteFlow();
 			continue;
 		}
-
+	
 		if (choice == 2) {
 			openAndDecodeFlow();
 			continue;
 		}
-
+	
 		if (choice == 3) {
 			break;
 		}
-
+	
 		std::cout << "Invalid choice.\n";
 	}
 

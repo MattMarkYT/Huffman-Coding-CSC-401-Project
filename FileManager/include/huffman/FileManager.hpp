@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <fstream>
 #include <memory>
+#include <filesystem>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -15,8 +16,11 @@
 #include "huffman/FMMisc.hpp"
 #include "huffman/HuffNode.hpp"
 
+#ifdef FM_ENABLE_LOG
 #define FM_FORCE_LOG true
-
+#else
+#define FM_FORCE_LOG true
+#endif
 
 // These are the status codes returned by FileManager operations.
 enum class FMErrorCode {
@@ -101,47 +105,88 @@ public:
 	// This parses the cached naive dictionary semantically into the exact uploaded map type.
 	[[nodiscard]] FMErrorCode parseDictionary(
 		std::unordered_map<unsigned char, std::string>& outDictionary,
-		bool logging = false
+		bool logging = false,
+		int* const length = nullptr,
+		float* const compression = nullptr,
+		int* const sizeBytes = nullptr
 	);
 
 	// This parses the cached Huffman dictionary semantically into the exact uploaded tree type.
-	[[nodiscard]] FMErrorCode parseDictionary(HuffNode*& outRoot, bool logging = false);
+	[[nodiscard]] FMErrorCode parseDictionary(HuffNode*& outRoot, bool logging = false,
+		int* const length = nullptr,
+		float* const compression = nullptr,
+		int* const sizeBytes = nullptr);
 
 	// This hands the current stream to the caller and resets this instance.
 	[[nodiscard]] std::shared_ptr<std::fstream> detachStream();
 
 	// This writes plain bytes with no custom wrapper and does not touch internal state.
-	[[nodiscard]] FMErrorCode writePlain(
-		std::string_view fileName,
-		const std::vector<unsigned char>& data
-	) const;
+	[[nodiscard]] static FMErrorCode writePlain(
+		const std::string& fileName,
+		const std::vector<unsigned char>& data,
+		const bool logging = false
+	);
 
 	// This writes the naive wrapper around an already-encoded payload and dictionary.
-	[[nodiscard]] FMErrorCode writeFormat(
+	[[nodiscard]] static FMErrorCode writeFormat(
 		std::string_view fileName,
 		const std::vector<unsigned char>& encodedPayload,
 		std::uint64_t originalDecodedLength,
 		const std::unordered_map<unsigned char, std::string>& dictionary,
 		bool logging = false,
 		bool addExtension = true
-	) const;
+	);
 
 	// This writes the Huffman wrapper around an already-encoded payload and tree.
-	[[nodiscard]] FMErrorCode writeFormat(
+	[[nodiscard]] static FMErrorCode writeFormat(
 		std::string_view fileName,
 		const std::vector<unsigned char>& encodedPayload,
 		std::uint64_t originalDecodedLength,
 		const HuffNode* tree,
 		bool logging = false,
 		bool addExtension = true
-	) const;
+	);
 
 	[[nodiscard]] static std::string buildOutputFileName(
 		std::string_view fileName,
 		FMFileType type
 	);
+
+	[[nodiscard]] std::string getFileName() const {
+		return this->m_fileName;
+	}
+
+	[[nodiscard]] std::string getStem() const {
+		return std::filesystem::path(this->m_fileName).stem().string();
+	}
+
 private:
 	
+	static inline std::string getExtensionFromType(const FMFileType type) {
+		switch (type)
+		{
+
+		case FMFileType::huffman:
+			return std::string(extHuffman);
+			break;
+
+		case FMFileType::naive:
+			return std::string(extNaive);
+			break;
+
+		case FMFileType::empty:
+			return std::string(extEmpty);
+			break;
+
+
+
+		default:
+			return "";
+			break;
+		}
+		
+	}
+
 
 	// These are the fixed extensions used when writeFormat picks the output name.
 	static constexpr std::string_view extNaive = ".hnai";
@@ -183,7 +228,7 @@ private:
 	[[nodiscard]] static std::array<unsigned char, 4> makeMagic(FMFileType type) noexcept;
 	[[nodiscard]] static bool isWrappedType(FMFileType type) noexcept;
 	[[nodiscard]] static bool isDictionaryType(FMFileType type) noexcept;
-	[[nodiscard]] static const char* typeName(FMFileType type) noexcept;
+	[[nodiscard]] static std::string_view typeName(FMFileType type) noexcept;
 
 	// This writes the special 5-byte empty wrapper.
 	[[nodiscard]] static FMErrorCode writeEmptyFile(
@@ -195,12 +240,18 @@ private:
 	[[nodiscard]] static FMErrorCode writeNaiveDictionary(
 		std::fstream& outFile,
 		const std::unordered_map<unsigned char, std::string>& dictionary,
-		bool logging = false
+		bool logging = false,
+		int* const length = nullptr,
+		float* const compression = nullptr,
+		int* const sizeBytes = nullptr
 	);
 	[[nodiscard]] static FMErrorCode writeHuffmanDictionary(
 		std::fstream& outFile,
 		const HuffNode* tree,
-		bool logging = false
+		bool logging = false,
+		int* const length = nullptr,
+		float* const compression = nullptr,
+		int* const sizeBytes = nullptr
 	);
 
 	// This writes the 2 length fields and the encoded payload bytes.

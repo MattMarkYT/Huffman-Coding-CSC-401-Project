@@ -31,6 +31,10 @@ FMErrorCode FileManager::openFileR(
 ) {
 	closeFile();
 
+	if (logging || FM_FORCE_LOG) {
+		std::cout << "openFileR: Opening file: " << fileName << '\n';
+	}
+
 	if (!m_file) {
 		m_file = std::make_shared<std::fstream>();
 	}
@@ -117,6 +121,13 @@ FMErrorCode FileManager::openFileR(
 
 	if (m_fileType == FMFileType::plain) {
 		return FMErrorCode::none;
+	}
+	
+	std::string fileExt = std::filesystem::path(fileName).extension().string();
+	
+	if (fileExt != FileManager::getExtensionFromType(detectedType)) {
+		std::cerr << "openFileR: (WARNING): mismatched file extension for " << FileManager::typeName(detectedType)<<" file. Expected \'"<<FileManager::getExtensionFromType(
+		detectedType)<<"\', but got \'"<<fileExt<<"\'\n";
 	}
 
 	if (m_fileType == FMFileType::empty) {
@@ -206,7 +217,10 @@ FMErrorCode FileManager::jumpToData(bool logging) {
 
 FMErrorCode FileManager::parseDictionary(
 	std::unordered_map<unsigned char, std::string>& outDictionary,
-	bool logging
+	bool logging,
+	int* const length,
+	float* const avgCompression,
+	int* const sizeBytes
 ) {
 	if (!isFileOpen()) {
 		return FMErrorCode::file_not_open;
@@ -238,6 +252,21 @@ FMErrorCode FileManager::parseDictionary(
 		std::cout << "parseDictionary(naive): dictionary length: " << m_dictLength << '\n';
 	}
 
+	if (length) {
+		*length = m_dictLength;
+	}
+
+	if (avgCompression) {
+		*avgCompression = 0;
+	}
+	if (sizeBytes) {
+		*sizeBytes = 0;
+	}
+	int i = 1;
+	float compressionEntry = 0;
+
+	int bytesEntry = 0;
+
 	for (std::size_t index = 0u; index < m_dictLength; ++index) {
 		std::array<unsigned char, 2> entry{};
 		const FMErrorCode readResult = readBytes(entry.data(), entry.size());
@@ -265,16 +294,40 @@ FMErrorCode FileManager::parseDictionary(
 			return FMErrorCode::duplicate_dictionary_code;
 		}
 
-		if (logging || FM_FORCE_LOG) {
-			std::cout << "parseDictionary(naive): "
-				<< hexByte(symbol) << " -> " << code << " (ascii: " << symbol << ") \n";
+		bytesEntry = 2 + entry.size();
+
+		if (sizeBytes) {
+			*sizeBytes += bytesEntry;
 		}
+
+
+		compressionEntry = (code.size() / 8.0f);
+
+		if (avgCompression) {
+			*avgCompression = (i * (*avgCompression) + (code.size() / 8.0f)) / (i + 1);
+		}
+
+
+
+		if (logging || FM_FORCE_LOG) {
+
+			std::printf("parseDictionary(naive): #%-3d: 0x%-2X, (ascii: %c) -> %-8s; compression ratio %-3.3f%% (%1d/8), bytes for entry: %-2d\n",
+				i, symbol, symbol, code.c_str(), compressionEntry * 100.0f, (int)code.size(), bytesEntry);
+
+
+			//std::cout << "parseDictionary(naive): "
+			//	<< hexByte(symbol) << " -> " << code << "(byte compression ratio: " << code.size() << "/8, " << std::setprecision(1) << std::fixed << ((code.size() / 8.0) * 100) << "%) (ascii: " << symbol << ") \n";
+		}
+		i++;
 	}
 
 	return FMErrorCode::none;
 }
 
-FMErrorCode FileManager::parseDictionary(HuffNode*& outRoot, bool logging) {
+FMErrorCode FileManager::parseDictionary(HuffNode*& outRoot, bool logging,
+	int* const length,
+	float* const avgCompression,
+	int* const sizeBytes) {
 	if (!isFileOpen()) {
 		return FMErrorCode::file_not_open;
 	}
@@ -308,6 +361,22 @@ FMErrorCode FileManager::parseDictionary(HuffNode*& outRoot, bool logging) {
 	if (logging || FM_FORCE_LOG) {
 		std::cout << "parseDictionary(huffman): dictionary length: " << m_dictLength << '\n';
 	}
+
+	if (length) {
+		*length = m_dictLength;
+	}
+
+	if (avgCompression) {
+		*avgCompression = 0;
+	}
+	if (sizeBytes) {
+		*sizeBytes = 0;
+	}
+	int i = 1;
+	float compressionEntry = 0;
+
+	int bytesEntry = 0;
+
 
 	for (std::size_t index = 0u; index < m_dictLength; ++index) {
 		std::array<unsigned char, 2> header{};
@@ -355,10 +424,31 @@ FMErrorCode FileManager::parseDictionary(HuffNode*& outRoot, bool logging) {
 			return insertResult;
 		}
 
-		if (logging || FM_FORCE_LOG) {
-			std::cout << "parseDictionary(huffman): "
-				<< hexByte(symbol) << " -> " << code << " (ascii: "<<symbol << ") \n";
+
+		bytesEntry = 2 + byteLength;
+
+		if (sizeBytes) {
+			*sizeBytes += bytesEntry;
 		}
+
+
+		compressionEntry = (code.size() / 8.0f);
+
+		if (avgCompression) {
+			*avgCompression = (i * (*avgCompression) + (code.size() / 8.0f)) / (i + 1);
+		}
+
+
+		if (logging || FM_FORCE_LOG) {
+
+			std::printf("parseDictionary(huffman): #%-3d: 0x%-2X, (ascii: %c) -> %-8s; compression ratio %-3.3f%% (%1d/8), bytes for entry: %-2d\n",
+				i, symbol, symbol, code.c_str(), compressionEntry * 100.0f, (int)code.size(), bytesEntry);
+
+
+			//std::cout << "parseDictionary(huffman): "
+			//	<< hexByte(symbol) << " -> " << code << "(byte compression ratio: " << code.size() << "/8, " << std::setprecision(1) << std::fixed << ((code.size() / 8.0) * 100) << "%) (ascii: " << symbol << ") \n";
+		}
+		i++;
 	}
 
 	return FMErrorCode::none;
@@ -372,22 +462,41 @@ std::shared_ptr<std::fstream> FileManager::detachStream() {
 }
 
 FMErrorCode FileManager::writePlain(
-	std::string_view fileName,
-	const std::vector<unsigned char>& data
-) const {
-	std::fstream outFile(std::string(fileName), std::ios::binary | std::ios::out | std::ios::trunc);
+	const std::string& fileName,
+	const std::vector<unsigned char>& data,
+	const bool logging
+) {
+	std::fstream outFile(fileName, std::ios::binary | std::ios::out | std::ios::trunc);
 	if (!outFile.is_open()) {
+		if (logging || FM_FORCE_LOG) {
+			std::cerr << "writePlain: ERROR: couldn't open file " << fileName << std::endl;
+		}
+		
 		return FMErrorCode::file_open_failed;
 	}
 
+
 	const FMErrorCode writeResult = writeBytes(outFile, data.data(), data.size());
 	if (writeResult != FMErrorCode::none) {
+
+		if (logging || FM_FORCE_LOG) {
+			std::cerr << "writePlain: ERROR: couldn't write data to file " <<std::endl;
+		}
 		return writeResult;
 	}
 
 	outFile.flush();
 	if (!outFile.good()) {
+		if (logging || FM_FORCE_LOG) {
+			std::cerr << "writePlain: ERROR: std::fstream is in a bad state " <<std::endl;
+		}
 		return FMErrorCode::file_write_failed;
+	}
+
+	if (logging || FM_FORCE_LOG) {
+		std::cout << "writePlain: filename: " << fileName << '\n';
+		std::cout << "writePlain: type: " << typeName(FMFileType::plain) << '\n';
+		std::cout << "writePlain: file size bytes: " << data.size() << '\n';
 	}
 
 	return FMErrorCode::none;
@@ -400,7 +509,7 @@ FMErrorCode FileManager::writeFormat(
 	const std::unordered_map<unsigned char, std::string>& dictionary,
 	bool logging,
 	bool addExtension
-) const {
+) {
 	if (encodedPayload.empty()) {
 		if (originalDecodedLength != 0u) {
 			return FMErrorCode::invalid_payload_length;
@@ -441,7 +550,11 @@ FMErrorCode FileManager::writeFormat(
 		return writeCRCPlaceholder;
 	}
 
-	const FMErrorCode writeDict = writeNaiveDictionary(outFile, dictionary, logging);
+	int length = 0;
+	float avgCompression = 0;
+	int bytesDict = 0;
+
+	const FMErrorCode writeDict = writeNaiveDictionary(outFile, dictionary, logging, &length, &avgCompression, &bytesDict);
 	if (writeDict != FMErrorCode::none) {
 		return writeDict;
 	}
@@ -461,13 +574,21 @@ FMErrorCode FileManager::writeFormat(
 		outFile.clear();
 		outFile.seekg(0, std::ios::end);
 		const std::streamoff fileSize = outFile.tellg();
+
+		std::cout << "writeFormat(naive): filename: " << outName << '\n';
 		std::cout << "writeFormat(naive): magic bytes: " << fmBytesToHex(magic) << '\n';
-		std::cout << "writeFormat(naive): type: " << typeName(FMFileType::naive) << '\n';
+		std::cout << "writeFormat(naive): type: " << typeName(FMFileType::huffman) << '\n';
+		std::cout << "writeFormat(naive): crc32c: " << fmBytesToHex(fmU32ToLE(crc)) << '\n';
+		std::cout << "writeFormat(naive): dictionary length entries: " << length << '\n';
+		std::cout << "writeFormat(naive): dictionary size bytes: " << bytesDict << '\n';
+		std::cout << "writeFormat(naive): best-case compression ratio: " << avgCompression << '\n';
 		std::cout << "writeFormat(naive): encoded payload bytes: " << encodedPayload.size() << '\n';
 		std::cout << "writeFormat(naive): decoded payload bytes: " << originalDecodedLength << '\n';
 		std::cout << "writeFormat(naive): file size bytes: " << fileSize << '\n';
-		std::cout << "writeFormat(naive): crc32c: " << fmBytesToHex(fmU32ToLE(crc)) << '\n';
-		std::cout << "writeFormat(naive): filename: " << outName << '\n';
+		std::cout << "writeFormat(naive): total file compression ratio: " << 100.0 * ((double)fileSize / (double)encodedPayload.size()) << '\n';
+
+
+
 	}
 
 	return FMErrorCode::none;
@@ -480,7 +601,7 @@ FMErrorCode FileManager::writeFormat(
 	const HuffNode* tree,
 	bool logging,
 	bool addExtension
-) const {
+) {
 	if (encodedPayload.empty()) {
 		if (originalDecodedLength != 0u) {
 			return FMErrorCode::invalid_payload_length;
@@ -514,7 +635,11 @@ FMErrorCode FileManager::writeFormat(
 		return writeCRCPlaceholder;
 	}
 
-	const FMErrorCode writeDict = writeHuffmanDictionary(outFile, tree, logging);
+	int length = 0;
+	float avgCompression = 0;
+	int bytesDict = 0;
+
+	const FMErrorCode writeDict = writeHuffmanDictionary(outFile, tree, logging, &length, &avgCompression, &bytesDict);
 	if (writeDict != FMErrorCode::none) {
 		return writeDict;
 	}
@@ -534,12 +659,19 @@ FMErrorCode FileManager::writeFormat(
 		outFile.clear();
 		outFile.seekg(0, std::ios::end);
 		const std::streamoff fileSize = outFile.tellg();
+
+		std::cout << "writeFormat(huffman): filename: " << outName << '\n';
 		std::cout << "writeFormat(huffman): magic bytes: " << fmBytesToHex(magic) << '\n';
 		std::cout << "writeFormat(huffman): type: " << typeName(FMFileType::huffman) << '\n';
+		std::cout << "writeFormat(huffman): crc32c: " << fmBytesToHex(fmU32ToLE(crc)) << '\n';
+		std::cout << "writeFormat(huffman): dictionary length entries: "<<length<<'\n';
+		std::cout << "writeFormat(huffman): dictionary size bytes: "<<bytesDict<<'\n';
+		std::cout << "writeFormat(huffman): best-case compression ratio: "<<avgCompression<<'\n';
 		std::cout << "writeFormat(huffman): encoded payload bytes: " << encodedPayload.size() << '\n';
 		std::cout << "writeFormat(huffman): decoded payload bytes: " << originalDecodedLength << '\n';
 		std::cout << "writeFormat(huffman): file size bytes: " << fileSize << '\n';
-		std::cout << "writeFormat(huffman): crc32c: " << fmBytesToHex(fmU32ToLE(crc)) << '\n';
+		std::cout << "writeFormat(huffman): total file compression ratio: " << 100.0*((double)fileSize/(double)encodedPayload.size()) << '\n';
+
 	}
 
 	return FMErrorCode::none;
@@ -942,7 +1074,7 @@ bool FileManager::isDictionaryType(FMFileType type) noexcept {
 	return type == FMFileType::naive || type == FMFileType::huffman;
 }
 
-const char* FileManager::typeName(FMFileType type) noexcept {
+std::string_view FileManager::typeName(FMFileType type) noexcept {
 	switch (type) {
 		case FMFileType::none:
 			return "none";
@@ -1025,7 +1157,10 @@ FMErrorCode FileManager::writeEmptyFile(std::string_view fileName, bool logging)
 FMErrorCode FileManager::writeNaiveDictionary(
 	std::fstream& outFile,
 	const std::unordered_map<unsigned char, std::string>& dictionary,
-	bool logging
+	bool logging,
+	int* const length,
+	float* const avgCompression,
+	int* const sizeBytes
 ) {
 	if (dictionary.empty()) {
 		return FMErrorCode::empty_dictionary;
@@ -1052,6 +1187,21 @@ FMErrorCode FileManager::writeNaiveDictionary(
 		std::cout << "writeNaiveDictionary: dictionary length: " << entries.size() << '\n';
 	}
 
+	if (length) {
+		*length = entries.size();
+	}
+
+	if (avgCompression) {
+		*avgCompression = 0;
+	}
+	if (sizeBytes) {
+		*sizeBytes = 0;
+	}
+	int i = 1;
+	float compressionEntry = 0;
+
+	int bytesEntry = 0;
+
 	for (const auto& [symbol, code] : entries) {
 		if (code.size() != codeWidth) {
 			return FMErrorCode::invalid_dictionary_code;
@@ -1074,10 +1224,30 @@ FMErrorCode FileManager::writeNaiveDictionary(
 			return writeEntry;
 		}
 
-		if (logging || FM_FORCE_LOG) {
-			std::cout << "writeNaiveDictionary: "
-				<< hexByte(symbol) << " -> " << code << " (ascii: " << symbol << ") \n";
+		bytesEntry = entry.size();
+
+		if (sizeBytes) {
+			*sizeBytes += bytesEntry;
 		}
+
+
+		compressionEntry = (code.size() / 8.0f);
+
+		if (avgCompression) {
+			*avgCompression = (i * (*avgCompression) + (code.size() / 8.0f)) / (i + 1);
+		}
+
+
+		if (logging || FM_FORCE_LOG) {
+
+			std::printf("writeNaiveDictionary: #%-3d: 0x%-2X, (ascii: %c) -> %-8s; compression ratio %-3.3f%% (%1d/8), bytes for entry: %-2d\n",
+				i, symbol, symbol, code.c_str(), compressionEntry * 100.0f, (int)code.size(), bytesEntry);
+
+
+			//std::cout << "writeNaiveDictionary: "
+			//	<< hexByte(symbol) << " -> " << code << "(byte compression ratio: " << code.size() << "/8, " << std::setprecision(1) << std::fixed << ((code.size() / 8.0) * 100) << "%) (ascii: " << symbol << ") \n";
+		}
+		i++;
 	}
 
 	return FMErrorCode::none;
@@ -1086,7 +1256,10 @@ FMErrorCode FileManager::writeNaiveDictionary(
 FMErrorCode FileManager::writeHuffmanDictionary(
 	std::fstream& outFile,
 	const HuffNode* tree,
-	bool logging
+	bool logging,
+	int* const length,
+	float* const avgCompression,
+	int* const sizeBytes
 ) {
 	if (tree == nullptr) {
 		return FMErrorCode::null_tree;
@@ -1117,7 +1290,23 @@ FMErrorCode FileManager::writeHuffmanDictionary(
 		std::cout << "writeHuffmanDictionary: dictionary length: " << codes.size() << '\n';
 	}
 
+	if (length) {
+		*length = codes.size();
+	}
+
+	if (avgCompression) {
+		*avgCompression = 0;
+	}
+	if (sizeBytes) {
+		*sizeBytes = 0;
+	}
+	int i = 1;
+	float compressionEntry = 0;
+
+	int bytesEntry = 0;
+
 	for (const auto& [symbol, code] : codes) {
+		bytesEntry = 0;
 		if (code.empty() || code.size() > 256u) {
 			return FMErrorCode::invalid_dictionary_code;
 		}
@@ -1142,6 +1331,7 @@ FMErrorCode FileManager::writeHuffmanDictionary(
 		if (writeSymbol != FMErrorCode::none) {
 			return writeSymbol;
 		}
+
 		const FMErrorCode writeLength = writeBytes(outFile, &lengthByte, 1u);
 		if (writeLength != FMErrorCode::none) {
 			return writeLength;
@@ -1151,10 +1341,31 @@ FMErrorCode FileManager::writeHuffmanDictionary(
 			return writeCode;
 		}
 
-		if (logging || FM_FORCE_LOG) {
-			std::cout << "writeHuffmanDictionary: "
-				<< hexByte(symbol) << " -> " << code << " (ascii: " << symbol << ") \n";
+		bytesEntry = 2 + packed.size();
+
+		if (sizeBytes) {
+			*sizeBytes += bytesEntry;
 		}
+
+
+		compressionEntry = (code.size() / 8.0f);
+
+		if (avgCompression) {
+			*avgCompression = (i * (*avgCompression) + (code.size() / 8.0f)) / (i + 1);
+		}
+
+
+		if (logging || FM_FORCE_LOG) {
+
+			std::printf("writeHuffmanDictionary: #%-3d: 0x%-2X, (ascii: %c) -> %-8s; compression ratio %-3.3f%% (%1d/8), bytes for entry: %-2d\n",
+				i, symbol, symbol, code.c_str(), compressionEntry*100.0f, (int)code.size(), bytesEntry);
+
+
+
+			//std::cout << "writeHuffmanDictionary: "
+			//	<< "#"<<i<<": 0x" << hexByte(symbol) << " (ascii: " << symbol << ") -> " << code << "; byte compression ratio: " << code.size() << "/8, " << std::setprecision(1) << std::fixed << ((code.size() / 8.0f) * 100) << "% (bytes for entry: "<< bytesEntry <<")\n";
+		}
+		i++;
 	}
 
 	return FMErrorCode::none;
