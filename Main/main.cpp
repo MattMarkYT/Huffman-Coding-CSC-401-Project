@@ -48,6 +48,14 @@ void batchTest(bool isGreedy) {
 	}
 	output << "Filename,Mode,Original Size,Compressed Size,Decoded Size,Tree / Map Creation (ms),Encoding (ms),Decoding (ms),Verified\n";
 
+	string charStatsName = string("char_stats_") + (isGreedy ? "greedy" : "naive") + ".csv";
+	ofstream charStats(charStatsName, ios::trunc);
+	if (!charStats.is_open()) {
+		cout << "Could not create char stats CSV file." << endl;
+		return;
+	}
+	charStats << "Filename,UniqueCharCount,TotalCharCount\n";
+
 	// this is where we process each file.
 	while (!fileQueue.empty()) {
 		File currentFile = fileQueue.front();
@@ -66,6 +74,18 @@ void batchTest(bool isGreedy) {
 			stopTimer();
 			saveTimer("Tree");
 
+			auto frequencies = getFrequencies(file);
+			charStats << currentFile.filename << "," << frequencies.size() << "," << currentFile.size << "\n";
+
+			ofstream freqFile(currentFile.filename + "_char_stats_greedy.csv", ios::trunc);
+			if (!freqFile.is_open()) {
+				cout << "Could not create frequency file for " << currentFile.filename << "." << endl;
+			} else {
+				freqFile << "CharValue,Frequency\n";
+				for (const auto& [ch, freq] : frequencies) {
+					freqFile << static_cast<int>(ch) << "," << freq << "\n";
+				}
+			}
 
 			resetTimer();
 			startTimer();
@@ -128,6 +148,8 @@ void batchTest(bool isGreedy) {
 			auto huffmanMap = createHuffmanMap(file);
 			stopTimer();
 			saveTimer("Map");
+
+			charStats << currentFile.filename << "," << huffmanMap.size() << "," << currentFile.size << "\n";
 
 			resetTimer();
 			startTimer();

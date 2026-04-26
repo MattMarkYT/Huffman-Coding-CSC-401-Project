@@ -9,6 +9,8 @@
 
 HuffNode* createHuffmanTree(std::istream& file);
 
+std::unordered_map<unsigned char, int> getFrequencies(std::istream& file);
+
 std::vector<unsigned char> encode(std::istream& file, HuffNode* tree);
 
 std::vector<unsigned char> decode(std::istream& file, HuffNode* root, size_t originalSize);

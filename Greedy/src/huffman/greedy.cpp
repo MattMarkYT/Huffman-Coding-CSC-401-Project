@@ -8,6 +8,19 @@ using namespace std;
 
 void generateCodes(unordered_map<unsigned char, string>&, HuffNode*, string);
 
+unordered_map<unsigned char, int> getFrequencies(istream& file) {
+    if (!file.good()) return {};
+    const int beginning = file.tellg();
+    char c;
+    unordered_map<unsigned char, int> frequencies;
+    while (file.get(c)) {
+        frequencies[static_cast<unsigned char>(c)]++;
+    }
+    file.clear();
+    file.seekg(beginning);
+    return frequencies;
+}
+
 HuffNode* createHuffmanTree(istream& file) {
     if (!file.good()) {
         cout << "File is not in good state. Returning nullptr";
