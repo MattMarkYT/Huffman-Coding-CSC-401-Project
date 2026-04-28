@@ -581,7 +581,7 @@ FMErrorCode FileManager::writeFormat(
 		std::cout << "writeFormat(naive): crc32c: " << fmBytesToHex(fmU32ToLE(crc)) << '\n';
 		std::cout << "writeFormat(naive): dictionary length entries: " << length << '\n';
 		std::cout << "writeFormat(naive): dictionary size bytes: " << bytesDict << '\n';
-		std::cout << "writeFormat(naive): best-case compression ratio: " << avgCompression << '\n';
+		std::cout << "writeFormat(naive): best-case compression ratio: " << avgCompression * 100.0f << "%\n";
 		std::cout << "writeFormat(naive): encoded payload bytes: " << encodedPayload.size() << '\n';
 		std::cout << "writeFormat(naive): decoded payload bytes: " << originalDecodedLength << '\n';
 		std::cout << "writeFormat(naive): file size bytes: " << fileSize << '\n';
@@ -666,7 +666,7 @@ FMErrorCode FileManager::writeFormat(
 		std::cout << "writeFormat(huffman): crc32c: " << fmBytesToHex(fmU32ToLE(crc)) << '\n';
 		std::cout << "writeFormat(huffman): dictionary length entries: "<<length<<'\n';
 		std::cout << "writeFormat(huffman): dictionary size bytes: "<<bytesDict<<'\n';
-		std::cout << "writeFormat(huffman): best-case compression ratio: "<<avgCompression<<'\n';
+		std::cout << "writeFormat(huffman): best-case compression ratio: " << avgCompression * 100.0f << "%\n";
 		std::cout << "writeFormat(huffman): encoded payload bytes: " << encodedPayload.size() << '\n';
 		std::cout << "writeFormat(huffman): decoded payload bytes: " << originalDecodedLength << '\n';
 		std::cout << "writeFormat(huffman): file size bytes: " << fileSize << '\n';
