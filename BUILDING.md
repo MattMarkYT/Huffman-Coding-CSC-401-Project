@@ -75,7 +75,9 @@ cmake --build --preset <the name of the preset> --target help
 Sub-project targets for this project:
 * `Naive`
 * `Greedy`
-* `Main` (depends on `Naive` and `Greedy`)
+* `TimeKeeper`
+* `FileManager`
+* `Main` (depends on all sub-projects defined above)
 
 Usual cmake utility targets:
 
