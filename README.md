@@ -17,3 +17,28 @@ You can read on how to compile the project using command line in [BUILDING.md](.
 If you want to configure/use a different preset that isn't in the list, compile and run the `preset_generator.cpp` to regenerate the list of presets.
 
 If you want add another sub-project to this CMake project, compile and run the `create_cmake_project.cpp`
+
+## Running the Test Suite
+
+Our test suite is a basic command-line interface with a menu-driven console UI.  
+After building the project, simply run `Main`.
+
+```
+Welcome to Huffman Test Suite
+
+1. Run Manual Input Test
+2. Run File Test (Refer to Input Folder)
+3. Switch Mode (Currently using Naive)
+4. Exit
+```
+
+In the build directory of the compiled project, create an `input` folder in the same directory as `Main` and place any files you would like to test inside it. Alternatively, selecting option `2` will automatically create the `input` folder if one does not already exist.
+
+Option `3` acts as a toggle between our naive fixed-length encoding method and our greedy Huffman encoding method.
+
+Option `2` runs batch tests on all files located in the `input` folder.
+
+Option `1` allows you to manually test string input directly through the console.
+
+The file test mode outputs compression statistics for the currently selected method across all files located in the `input` folder.
+
