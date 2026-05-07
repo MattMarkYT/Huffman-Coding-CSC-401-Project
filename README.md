@@ -32,7 +32,7 @@ Welcome to Huffman Test Suite
 4. Exit
 ```
 
-In the build directory of the compiled project, create an `input` folder in the same directory as `Main` and place any files you would like to test inside it. Alternatively, selecting option `2` will automatically create the `input` folder if one does not already exist.
+In the build directory of the compiled project, create an `input` folder in the same directory as `Main` and place any files you would like to test inside it.
 
 Option `3` acts as a toggle between our naive fixed-length encoding method and our greedy Huffman encoding method.
 
