@@ -42,3 +42,11 @@ Option `1` allows you to manually test string input directly through the console
 
 The file test mode outputs compression statistics for the currently selected method across all files located in the `input` folder.
 
+## Reproducing our experimental results
+
+In the build directory of the compiled project, create an `input` folder in the same directory as `Main` and place our test files from the google drive into that folder.
+
+Proceed with Option `2` to run the batch test on all the files.
+
+Following the tests, refer to `output_greedy` and `output_naive` respectively.
+
