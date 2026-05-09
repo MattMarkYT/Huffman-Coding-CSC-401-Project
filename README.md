@@ -50,3 +50,12 @@ Proceed with Option `2` to run the batch test on all the files.
 
 Following the tests, refer to `output_greedy.csv` and `output_naive.csv` respectively.
 
+## Role of each major subprogram.
+
+`Main` is our test suite which connects `FileManager`, `Greedy`, `Naive`, and `TimeKeeper`.
+
+`Naive` is referring to our baseline implementation of fixed length encoding. It includes functions to create a map, to encode data, and to decode data. Also has a basic test suite within it.
+
+`Greedy` is referring to our implementation of huffman algorithm. It includes functions to create a huffman tree, to encode data, and to decode data. Also has a basic test suite within it.
+
+
