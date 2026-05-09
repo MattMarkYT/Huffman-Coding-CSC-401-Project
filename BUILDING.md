@@ -23,7 +23,7 @@ Note: the chosen compiler must be accessible form PATH for this to work.
 Supported architecture: 
 * `x86`: 32-bit
 * `x64`: 64-bit
-* `native`: no specied architecture, compiler default. NOTE: this may fail on some systems, if default compiler and linker have mismatched architecture.
+* `native`: no specified architecture, compiler default. NOTE: this may fail on some systems, if default compiler and linker have mismatched architecture.
 
 Supported build type: 
 
@@ -46,7 +46,7 @@ If you want add another sub-project to this CMake project, compile and run the `
 ```
 cmake --preset msvc-native-debug
 cmake --preset clang-native-debug
-cmake --preset gccc-native-debug
+cmake --preset gcc-native-debug
 ```
 
 ## Building
