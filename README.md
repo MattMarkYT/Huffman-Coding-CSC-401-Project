@@ -58,4 +58,6 @@ Following the tests, refer to `output_greedy.csv` and `output_naive.csv` respect
 
 `Greedy` is referring to our implementation of huffman algorithm. It includes functions to create a huffman tree, to encode data, and to decode data. Also has a basic test suite within it.
 
+`FileManager` is referring to our implementation of the file format and handling of the files for encoding and decoding. It manages reading and writing of the separate file formats for both naive and huffman encodings. It also provides an extensive testing framework for file integrity and correct work of the `Naive` and `Greedy` modules.
+
 
