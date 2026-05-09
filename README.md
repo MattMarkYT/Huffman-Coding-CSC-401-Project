@@ -4,6 +4,8 @@ Project about exploring the algorithms behind huffman coding, for the CSC 401 cl
 
 ## CMake, configuration, Building
 
+**Dependencies:** C++20 Compiler, CMake >=v3.23
+
 Project uses cmake for configuration and building, and uses presets to assist with this greatly.
 
 Some IDE's, like Visual Studio, take the task of configuring and building the project on themselves. 
