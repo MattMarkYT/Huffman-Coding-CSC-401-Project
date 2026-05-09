@@ -48,5 +48,5 @@ In the build directory of the compiled project, create an `input` folder in the 
 
 Proceed with Option `2` to run the batch test on all the files.
 
-Following the tests, refer to `output_greedy` and `output_naive` respectively.
+Following the tests, refer to `output_greedy.csv` and `output_naive.csv` respectively.
 
