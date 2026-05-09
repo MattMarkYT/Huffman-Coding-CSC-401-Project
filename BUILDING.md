@@ -1,5 +1,9 @@
 ## Configuration
 
+**NOTE:** The project uses features of the C++20 standard. Ensure that your compiler supports these features!
+
+**NOTE::** The CMake presets used here require CMake of version of at least 3.23! Ensure that your CMake installation version supports these features!
+
 You can configure the project using the following command:
 ```
 cmake --preset <compiler>-<architecture>-<build type>-<optional compiler-exclusive tools>
